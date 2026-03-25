@@ -1,0 +1,162 @@
+:root {
+  color-scheme: light;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --line: #d8dee6;
+  --text: #1f2a37;
+  --muted: #5b6674;
+  --accent: #0a7a5a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app-shell {
+  min-height: 100dvh;
+  padding: 1rem;
+}
+
+.container {
+  max-width: 920px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+h1,
+h2 {
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 1.35rem;
+}
+
+h2 {
+  font-size: 1.05rem;
+}
+
+p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.input-group {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.input-group label {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  font-size: 1rem;
+  background: #fff;
+  color: var(--text);
+}
+
+.stats {
+  margin-top: 0.9rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.6rem;
+}
+
+.stat {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  background: #fdfefe;
+}
+
+.stat .label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.stat .value {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.value.highlight {
+  color: var(--accent);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 0.75rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.5rem 0.45rem;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+thead th {
+  font-size: 0.8rem;
+  color: var(--muted);
+  position: sticky;
+  top: 0;
+  background: #fff;
+}
+
+.note {
+  margin-top: 0.6rem;
+  font-size: 0.84rem;
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 0.7rem;
+  }
+
+  .card {
+    padding: 0.8rem;
+  }
+
+  h1 {
+    font-size: 1.2rem;
+  }
+}
