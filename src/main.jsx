@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 var REP_OPTIONS = [];
-for (var i = 1; i <= 20; i++) REP_OPTIONS.push(i);
+for (var i = 1; i <= 15; i++) REP_OPTIONS.push(i);
 var SET_OPTIONS = [1, 2, 3, 4, 5];
 var ROUNDING_STEP_KG = 0.5;
 
