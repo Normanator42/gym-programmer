@@ -1,4 +1,4 @@
-var CACHE_NAME = "1rm-calc-v2";
+var CACHE_NAME = "1rm-calc-v3";
 var ASSETS = [
   "./",
   "./index.html",

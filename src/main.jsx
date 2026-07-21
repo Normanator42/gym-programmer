@@ -1,25 +1,42 @@
 import React, { useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-const REP_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const SET_OPTIONS = [1, 2, 3, 4, 5];
-const ROUNDING_STEP_KG = 0.5;
+var REP_OPTIONS = [];
+for (var i = 1; i <= 20; i++) REP_OPTIONS.push(i);
+var SET_OPTIONS = [1, 2, 3, 4, 5];
+var ROUNDING_STEP_KG = 0.5;
 
-const RATIO_PERCENTAGES = {
-  1: { 1: 100.0, 2: 98.6, 3: 97.2, 4: 95.8, 5: 94.4 },
-  2: { 1: 96.5, 2: 94.9, 3: 93.3, 4: 91.8, 5: 90.3 },
-  3: { 1: 93.4, 2: 91.6, 3: 89.8, 4: 88.1, 5: 86.5 },
-  4: { 1: 90.5, 2: 88.5, 3: 86.6, 4: 84.8, 5: 83.0 },
-  5: { 1: 87.7, 2: 85.6, 3: 83.5, 4: 81.6, 5: 79.7 },
-  6: { 1: 85.1, 2: 82.8, 3: 80.6, 4: 78.5, 5: 76.5 },
-  7: { 1: 82.6, 2: 80.1, 3: 77.8, 4: 75.6, 5: 73.5 },
-  8: { 1: 80.2, 2: 77.5, 3: 75.1, 4: 72.8, 5: 70.6 },
-  9: { 1: 77.8, 2: 75.0, 3: 72.5, 4: 70.1, 5: 67.8 },
-  10: { 1: 75.5, 2: 72.6, 3: 70.0, 4: 67.5, 5: 65.1 },
-};
+// 1-set base %1RM for reps 1-20, calibrated to Nuzzo et al. 2023
+// meta-regression (Sports Medicine, n=7289 across 269 studies).
+// Values represent the inverse of the reps~%1RM relationship for
+// general compound barbell movements (between bench-specific and
+// all-exercises models).
+var BASE_PCT = [
+  100.0, 97.0, 94.3, 91.5, 89.0,
+  86.3, 83.9, 81.5, 79.3, 77.4,
+  75.5, 73.5, 71.8, 70.0, 68.3,
+  66.7, 65.2, 63.7, 62.3, 61.0
+];
 
-function toNumber(value, fallback = 0) {
-  const parsed = Number(value);
+// Per-set fatigue discount (% points of 1RM per additional set).
+// Increases with rep count since higher-rep sets create more
+// cumulative fatigue. Capped at 15 reps (metabolic fatigue
+// recovery is faster above this, limiting further growth).
+// Based on Nuzzo 2024 repeated-sets fatigue analysis and
+// Willardson et al. multi-set performance data, assuming
+// 2-3 min inter-set rest and sets near failure.
+function perSetDiscount(reps) {
+  return 1.4 + Math.min(reps - 1, 14) * 0.13;
+}
+
+function getRatioPct(reps, sets) {
+  var base = BASE_PCT[reps - 1];
+  var discount = perSetDiscount(reps);
+  return Math.max(base - (sets - 1) * discount, 30);
+}
+
+function toNumber(value, fallback) {
+  var parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
@@ -28,32 +45,33 @@ function roundToStep(value, step) {
   return Math.round(value / step) * step;
 }
 
-function formatKg(value, decimals = 1) {
-  return value.toFixed(decimals) + " kg";
+function formatKg(value, decimals) {
+  return value.toFixed(decimals === undefined ? 1 : decimals) + " kg";
 }
 
 function App() {
-  const [weightInput, setWeightInput] = useState("75");
-  const [reps, setReps] = useState(10);
-  const [sets, setSets] = useState(1);
-  const [additional1RmInput, setAdditional1RmInput] = useState("1.7");
-  const [toleranceInput, setToleranceInput] = useState("0.1");
-  const [filterReps, setFilterReps] = useState(0);
-  const [filterSets, setFilterSets] = useState(0);
+  var _s = useState;
+  var weightInput = _s("75"), setWeightInput = weightInput[1]; weightInput = weightInput[0];
+  var reps = _s(10), setReps = reps[1]; reps = reps[0];
+  var sets = _s(1), setSets = sets[1]; sets = sets[0];
+  var additional1RmInput = _s("0"), setAdditional1RmInput = additional1RmInput[1]; additional1RmInput = additional1RmInput[0];
+  var toleranceInput = _s("0.4"), setToleranceInput = toleranceInput[1]; toleranceInput = toleranceInput[0];
+  var filterReps = _s(0), setFilterReps = filterReps[1]; filterReps = filterReps[0];
+  var filterSets = _s(0), setFilterSets = filterSets[1]; filterSets = filterSets[0];
 
-  const calculations = useMemo(() => {
-    const weight = toNumber(weightInput, 0);
-    const additional1Rm = toNumber(additional1RmInput, 0);
-    const tolerance = Math.max(0, toNumber(toleranceInput, 0));
-    const percentage = RATIO_PERCENTAGES[reps] && RATIO_PERCENTAGES[reps][sets];
+  var calculations = useMemo(function () {
+    var weight = toNumber(weightInput, 0);
+    var additional1Rm = toNumber(additional1RmInput, 0);
+    var tolerance = Math.max(0, toNumber(toleranceInput, 0));
+    var percentage = getRatioPct(reps, sets);
 
     if (!percentage || weight <= 0) {
       return { valid: false, message: "Enter a working weight above 0 kg." };
     }
 
-    const baseRatio = percentage / 100;
-    const baseEstimated1Rm = weight / baseRatio;
-    const target1Rm = baseEstimated1Rm + additional1Rm;
+    var baseRatio = percentage / 100;
+    var baseEstimated1Rm = weight / baseRatio;
+    var target1Rm = baseEstimated1Rm + additional1Rm;
 
     if (target1Rm <= 0) {
       return { valid: false, message: "Target 1RM must be above 0 kg." };
@@ -64,7 +82,7 @@ function App() {
       for (var si = 0; si < SET_OPTIONS.length; si++) {
         var repOption = REP_OPTIONS[ri];
         var setOption = SET_OPTIONS[si];
-        var optionPct = RATIO_PERCENTAGES[repOption][setOption];
+        var optionPct = getRatioPct(repOption, setOption);
         var optionRatio = optionPct / 100;
         var exactWorkingWeight = target1Rm * optionRatio;
         var roundedWorkingWeight = roundToStep(exactWorkingWeight, ROUNDING_STEP_KG);
