@@ -6,13 +6,14 @@ const projectRoot = path.resolve(__dirname, "..");
 const entryPoint = path.join(projectRoot, "src", "main.jsx");
 const stylesPath = path.join(projectRoot, "styles.css");
 const publicDir = path.join(projectRoot, "public");
+const swTemplatePath = path.join(publicDir, "sw.js");
 
 async function build() {
   if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir);
   }
 
-  const result = await esbuild.build({
+  await esbuild.build({
     entryPoints: [entryPoint],
     bundle: true,
     format: "iife",
@@ -22,6 +23,15 @@ async function build() {
   });
 
   fs.copyFileSync(stylesPath, path.join(publicDir, "styles.css"));
+
+  // Auto-bump service worker cache name using build timestamp
+  const cacheVersion = "1rm-calc-" + Date.now();
+  const swContent = fs.readFileSync(swTemplatePath, "utf8");
+  const swUpdated = swContent.replace(
+    /var CACHE_NAME = "[^"]+";/,
+    'var CACHE_NAME = "' + cacheVersion + '";'
+  );
+  fs.writeFileSync(swTemplatePath, swUpdated, "utf8");
 
   const html = `<!doctype html>
 <html lang="en">
@@ -54,7 +64,7 @@ async function build() {
   fs.writeFileSync(path.join(publicDir, "index.html"), html, "utf8");
 
   console.log("Build complete -> public/");
-  console.log("  index.html, styles.css, app.bundle.js, sw.js, manifest.json, icons");
+  console.log("  Cache version: " + cacheVersion);
 }
 
 build().catch((error) => {
