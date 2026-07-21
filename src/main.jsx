@@ -51,11 +51,11 @@ function formatKg(value, decimals) {
 
 function App() {
   var _s = useState;
-  var weightInput = _s("75"), setWeightInput = weightInput[1]; weightInput = weightInput[0];
+  var weightInput = _s("100"), setWeightInput = weightInput[1]; weightInput = weightInput[0];
   var reps = _s(10), setReps = reps[1]; reps = reps[0];
   var sets = _s(1), setSets = sets[1]; sets = sets[0];
   var additional1RmInput = _s("0"), setAdditional1RmInput = additional1RmInput[1]; additional1RmInput = additional1RmInput[0];
-  var toleranceInput = _s("0.4"), setToleranceInput = toleranceInput[1]; toleranceInput = toleranceInput[0];
+  var toleranceInput = _s("0.5"), setToleranceInput = toleranceInput[1]; toleranceInput = toleranceInput[0];
   var filterReps = _s(0), setFilterReps = filterReps[1]; filterReps = filterReps[0];
   var filterSets = _s(0), setFilterSets = filterSets[1]; filterSets = filterSets[0];
 
