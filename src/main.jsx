@@ -104,8 +104,8 @@ function App() {
     }
 
     matches.sort(function (a, b) {
-      var d = Math.abs(a.error) - Math.abs(b.error);
-      if (d !== 0) return d;
+      var w = a.roundedWorkingWeight - b.roundedWorkingWeight;
+      if (w !== 0) return w;
       if (a.sets !== b.sets) return a.sets - b.sets;
       return a.reps - b.reps;
     });
